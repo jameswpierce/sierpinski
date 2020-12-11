@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sierpinski</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root {
+        --gradient: linear-gradient(
+          149deg,
+          rgba(238, 174, 202, 1) 0%,
+          rgba(148, 187, 233, 1) 100%
+        );
+        --background: rgb(238, 174, 202);
+      }
+
+      body {
+        padding: 0;
+        margin: 0;
+        background-color: var(--background);
+        background: var(--gradient);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <svg id="sierpinski" height="86.6" width="100">
+    </svg>
+    <script>
+      const createSVGElement = (name, attributes = {}) => {
+        const el = document.createElementNS('http://www.w3.org/2000/svg', name);
+        Object.keys(attributes).map((attr) => {
+          el.setAttribute(attr, attributes[attr]);
+        });
+        return el;
+      }
+
+      const equilateralTriangle = (x, y, width) => {
+        const height = Math.sqrt(width**2 - (width/2)**2);
+        const points = `${x + width/2},${y} ${width + x},${y + height} ${x},${y + height}`;
+        const center = {x: (width/2 + x), y: (height/2 + y)};
+
+        return {
+          height: () => height,
+          width: () => width,
+          center: () => center,
+          points: () => points,
+          el: () => createSVGElement('polygon', {points, style: 'fill:white;'}),
+        }
+      }
+
+      const Sierpinski = () => {
+        const els = {
+          svg: document.getElementById("sierpinski")
+        };
+        
+        const methods = {
+          iterate: () => {
+            const triangle = equilateralTriangle(0, 0, 100);
+            els.svg.appendChild(triangle.el());
+          }
+        }
+        
+        methods.iterate()
+      };
+
+      document.addEventListener("DOMContentLoaded", Sierpinski);
+    </script>
+  </body>
+</html>
