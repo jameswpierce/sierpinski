@@ -28,7 +28,7 @@
     </style>
   </head>
   <body>
-    <svg id="sierpinski" height="86.6" width="100"></svg>
+    <svg id="sierpinski" height="60vh" width="60vh"></svg>
     <input
       type="range"
       value="0"
@@ -49,36 +49,52 @@
         return el;
       };
 
-      const equilateralTriangle = (x, y, width) => {
+      const equilateralTriangle = (x, y, width, style = "fill:white;") => {
         const height = Math.sqrt(width ** 2 - (width / 2) ** 2);
         const points = `${x + width / 2},${y} ${width + x},${y +
           height} ${x},${y + height}`;
-        const center = { x: width / 2 + x, y: height / 2 + y };
         const el = createSVGElement("polygon", {
           points,
-          style: "fill:white;"
+          style
         });
 
         return {
           height: () => height,
           width: () => width,
-          center: () => center,
           points: () => points,
+          position: () => {
+            return { x, y };
+          },
           el: () => el
         };
       };
 
       const Sierpinski = elementId => {
-        const els = {
-          svg: document.getElementById(elementId)
+        const svg = document.getElementById(elementId);
+        const { width } = svg.getBoundingClientRect();
+        const rootTriangle = equilateralTriangle(0, 0, width);
+
+        const iterate = (triangle, iterations) => {
+          const width = triangle.width() / 2;
+          const height = triangle.height() / 2;
+          const { x, y } = triangle.position();
+          const triangles = [
+            equilateralTriangle(x + width / 2, y, width),
+            equilateralTriangle(x, y + height, width),
+            equilateralTriangle(x + width, y + height, width)
+          ];
+
+          return triangles;
+        };
+
+        const draw = ({ iterations }) => {
+          let els = iterate(rootTriangle, iterations);
+
+          svg.replaceChildren(...els.map(e => e.el()));
         };
 
         return {
-          draw: ({ iterations }) => {
-            console.log(iterations);
-            const triangle = equilateralTriangle(0, 0, 100);
-            els.svg.appendChild(triangle.el());
-          }
+          draw
         };
       };
 
@@ -94,7 +110,7 @@
           handleIterationsSliderInput: e => {
             const iterations = e.target.value;
             els.iterationsValue.innerText = iterations;
-            visualization.draw({iterations});
+            visualization.draw({ iterations });
           }
         };
 
@@ -102,7 +118,7 @@
           "input",
           methods.handleIterationsSliderInput
         );
-        visualization.draw({iterations: 0});
+        visualization.draw({ iterations: 0 });
       };
 
       document.addEventListener("DOMContentLoaded", UI);
