@@ -30,6 +30,7 @@
   <body>
     <svg id="sierpinski" height="60vh" width="60vh"></svg>
     <input
+      autofocus
       type="range"
       value="0"
       name="iterations"
@@ -74,7 +75,7 @@
         const { width } = svg.getBoundingClientRect();
         const rootTriangle = equilateralTriangle(0, 0, width);
 
-        const splitTriangle = (triangle) => {
+        const splitTriangle = triangle => {
           const width = triangle.width() / 2;
           const height = triangle.height() / 2;
           const { x, y } = triangle.position();
@@ -87,9 +88,16 @@
           return triangles;
         };
 
-        const draw = ({ iterations }) => {
-          let els = splitTriangle(rootTriangle);
+        const iterate = (triangles, depth) => {
+          if (depth == 0) {
+            return triangles;
+          }
+          const nextTriangles = triangles.flatMap(triangle => splitTriangle(triangle))
+          return iterate(nextTriangles, depth - 1);
+        }
 
+        const draw = ({ iterations }) => {
+          const els = iterate([rootTriangle], iterations);
           svg.replaceChildren(...els.map(e => e.el()));
         };
 
