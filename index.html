@@ -23,51 +23,89 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-direction: column;
       }
     </style>
   </head>
   <body>
-    <svg id="sierpinski" height="86.6" width="100">
-    </svg>
+    <svg id="sierpinski" height="86.6" width="100"></svg>
+    <input
+      type="range"
+      value="0"
+      name="iterations"
+      min="0"
+      max="10"
+      id="iterations"
+    />
+    <label for="iterations"
+      >Iterations: <span id="iterationsValue">0</span></label
+    >
     <script>
       const createSVGElement = (name, attributes = {}) => {
-        const el = document.createElementNS('http://www.w3.org/2000/svg', name);
-        Object.keys(attributes).map((attr) => {
+        const el = document.createElementNS("http://www.w3.org/2000/svg", name);
+        Object.keys(attributes).map(attr => {
           el.setAttribute(attr, attributes[attr]);
         });
         return el;
-      }
+      };
 
       const equilateralTriangle = (x, y, width) => {
-        const height = Math.sqrt(width**2 - (width/2)**2);
-        const points = `${x + width/2},${y} ${width + x},${y + height} ${x},${y + height}`;
-        const center = {x: (width/2 + x), y: (height/2 + y)};
+        const height = Math.sqrt(width ** 2 - (width / 2) ** 2);
+        const points = `${x + width / 2},${y} ${width + x},${y +
+          height} ${x},${y + height}`;
+        const center = { x: width / 2 + x, y: height / 2 + y };
+        const el = createSVGElement("polygon", {
+          points,
+          style: "fill:white;"
+        });
 
         return {
           height: () => height,
           width: () => width,
           center: () => center,
           points: () => points,
-          el: () => createSVGElement('polygon', {points, style: 'fill:white;'}),
-        }
-      }
-
-      const Sierpinski = () => {
-        const els = {
-          svg: document.getElementById("sierpinski")
+          el: () => el
         };
-        
-        const methods = {
-          iterate: () => {
+      };
+
+      const Sierpinski = elementId => {
+        const els = {
+          svg: document.getElementById(elementId)
+        };
+
+        return {
+          draw: ({ iterations }) => {
+            console.log(iterations);
             const triangle = equilateralTriangle(0, 0, 100);
             els.svg.appendChild(triangle.el());
           }
-        }
-        
-        methods.iterate()
+        };
       };
 
-      document.addEventListener("DOMContentLoaded", Sierpinski);
+      const UI = () => {
+        const visualization = Sierpinski("sierpinski");
+
+        const els = {
+          iterationsSlider: document.getElementById("iterations"),
+          iterationsValue: document.getElementById("iterationsValue")
+        };
+
+        const methods = {
+          handleIterationsSliderInput: e => {
+            const iterations = e.target.value;
+            els.iterationsValue.innerText = iterations;
+            visualization.draw({iterations});
+          }
+        };
+
+        els.iterationsSlider.addEventListener(
+          "input",
+          methods.handleIterationsSliderInput
+        );
+        visualization.draw({iterations: 0});
+      };
+
+      document.addEventListener("DOMContentLoaded", UI);
     </script>
   </body>
 </html>
