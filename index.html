@@ -93,7 +93,7 @@
           if (depth == 0) {
             return triangles;
           }
-          const nextTriangles = triangles.flatMap(triangle => splitTriangle(triangle))
+          const nextTriangles = triangles.flatMap(splitTriangle)
           return iterate(nextTriangles, depth - 1);
         }
 
