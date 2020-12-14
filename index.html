@@ -50,9 +50,9 @@
         return el;
       };
 
-      const equilateralTriangle = (x, y, width, style = "fill:white;") => {
-        const height = Math.sqrt(width ** 2 - (width / 2) ** 2);
-        const points = `${x + width / 2},${y} ${width + x},${y +
+      const equilateralTriangle = (x, y, sideLength, style = "fill:white;") => {
+        const height = Math.sqrt(sideLength ** 2 - (sideLength / 2) ** 2);
+        const points = `${x + sideLength / 2},${y} ${sideLength + x},${y +
           height} ${x},${y + height}`;
         const el = createSVGElement("polygon", {
           points,
@@ -61,7 +61,8 @@
 
         return {
           height: () => height,
-          width: () => width,
+          sideLength: () => sideLength,
+          width: () => sideLength,
           points: () => points,
           position: () => {
             return { x, y };
